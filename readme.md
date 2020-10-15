@@ -1,14 +1,14 @@
 ## DM signal analysis repository  
   
 
-2. Gen-Level analysis  
+1. Gen-Level analysis  
 
 ```bash
 python [code.py] [input.root]
 ``` 
   - [PyROOT_leptonsig.py](https://github.com/groupKNUPHY/DM_signal_study/blob/master/PyROOT_leptonsig.py)
 
-3. Detector level analysis
+2. Detector level analysis
 
 ```bash
 python [code.py] [input.root]
@@ -17,7 +17,7 @@ python [code.py] [input.root]
   - [PyROOT_MET.py](https://github.com/groupKNUPHY/DM_signal_study/blob/master/PyROOT_MET.py)
 
 
-4. Draw histogram and weighting 
+3. Draw histogram and weighting 
 
 ```bash
 python [code.py]
