@@ -3,6 +3,25 @@ import uproot_methods as upm
 import numpy as np
 import awkward1 as ak
 
+###############################################
+##### All of this code made by Taiwoo Kim #####
+##### Lab 208, NS1, Department of Physics #####
+######## Kyungpook National University ########
+############### Daegu, KOREA ##################
+############# resisov@nate.com ################
+###############################################
+
+## This is prototype ver 1.0.2                                     ##
+## Array Based Calculaor for massless daughter particles!          ##
+## Usage : import mt2calculator                                    ##
+##         ABC = Mt2()                                             ##
+##         results = ABC.cal_mt2(pt1, phi1, pt2, phi2, met, phi3)  ##
+##         print(results)                                          ##
+## Please input visible daughers at 1 and 2, and input met at 3    ##
+## Have a good day and please cite my paper arXiV: coming soon     ##
+## and also cite associated mt2 papers arXiV:                      ##
+##                                     arXiV:                      ##
+##                                     arXiV:                      ##
 
 class Mt2:
 	def cal_mt2(self,pt1,phi1,pt2,phi2,met,phi3):
