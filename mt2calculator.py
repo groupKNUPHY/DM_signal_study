@@ -33,7 +33,7 @@ class Mt2:
 		visBpy = pt2 * np.sin(phi2)
 		invpx = met * np.cos(phi3)
 		invpy = met * np.sin(phi3)
-		self.get_mt2(visApx, visApy, visBpx, visBpy, invpx, invpy)
+		return self.get_mt2(visApx, visApy, visBpx, visBpy, invpx, invpy)
 
 	def get_mt2(self,visApx, visApy, visBpx, visBpy, invpx, invpy):
 		global invVector
@@ -42,7 +42,7 @@ class Mt2:
 		invVector = np.array([np.zeros(invpx.shape),invpx,invpy])
 		visAVector = np.array([np.zeros(visApx.shape),visApx,visApy])
 		visBVector = np.array([np.zeros(visBpx.shape),visBpx,visBpy])
-		self.massless(visAVector,visBVector,invVector)
+		return self.massless(visAVector,visBVector,invVector)
 
 	def massless(self,visAVector,visBVector,invVector):
 		pax = visAVector[1]
@@ -202,6 +202,7 @@ class Mt2:
 				print("Don't worry",cnt)
 
 		print("Mt2 Finish")
+		print(mt2_b)
 		return mt2_b
 
 
