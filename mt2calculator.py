@@ -2,6 +2,7 @@ import uproot as ROOT
 import uproot_methods as upm
 import numpy as np
 import awkward1 as ak
+import numba, numpy
 
 ###############################################
 ##### All of this code made by Taiwoo Kim #####
@@ -23,6 +24,7 @@ import awkward1 as ak
 ##                                     arXiV:                      ##
 ##                                     arXiV:                      ##
 
+
 class Mt2:
 	def cal_mt2(self,pt1,phi1,pt2,phi2,met,phi3):
 		visApx = pt1 * np.cos(phi1)
@@ -41,7 +43,6 @@ class Mt2:
 		visAVector = np.array([np.zeros(visApx.shape),visApx,visApy])
 		visBVector = np.array([np.zeros(visBpx.shape),visBpx,visBpy])
 		self.massless(visAVector,visBVector,invVector)
-
 
 	def massless(self,visAVector,visBVector,invVector):
 		pax = visAVector[1]
@@ -184,24 +185,70 @@ class Mt2:
 		midmass = np.zeros(maxmass.shape)
 		Delta_mid = np.zeros(maxmass.shape)
 		nsols_mid = np.zeros(maxmass.shape)
+		print("debug")
 		cnt = 0
 		for i in range(len(maxmass)):
 			while (maxmass[i] -minmass[i] > precision[i]):
 				midmass[i] = (minmass[i]+maxmass[i])/2.
-				Delta_mid[i] = midmass[i] * midmass[i] - 0 #mnsq
-				nsols_mid = self.nsols_massless(Delta_mid,Easq,d21,d20,e21,e20,f22,f21,f20,pax,Ea,a2,b2,c2)
-				if (nsols_mid[i] != nsols_low[i]):
+				Delta_mid = midmass[i] * midmass[i] - 0 #mnsq
+				nsols_mid = self.nsols_onepoint(Delta_mid,Easq[i],d21[i],d20[i],e21[i],e20[i],f22[i],f21[i],f20[i],pax[i],Ea[i],a2[i],b2[i],c2[i])
+				if (nsols_mid != nsols_low[i]):
 					maxmass[i] = midmass[i]
-				if (nsols_mid[i] == nsols_low[i]):
+				if (nsols_mid == nsols_low[i]):
 					minmass[i] = midmass[i]
 			mt2_b[i] = minmass[i]
 			cnt += 1
-			if (cnt % 100 == 0):
+			if (cnt % 1000 == 0):
 				print("Don't worry",cnt)
 
 		print("Mt2 Finish")
 		return mt2_b
 
+
+	def nsols_onepoint(self,Dsq,Easq,d21,d20,e21,e20,f22,f21,f20,pax,Ea,a2,b2,c2):
+		delta = Dsq / (2*Easq)
+		d2 = d21 * delta + d20
+		e2 = e21 * delta + e20
+		f2 = f22 * delta * delta + f21 * delta + f20
+		a = 1
+		b = 1
+		if pax > 0:
+			a = Ea / Dsq
+			b = -Dsq / (4 * Ea)
+		else:
+			a = -Ea / Dsq
+			b = Dsq / (4 * Ea)
+
+		A4 = a*a*a2
+		A3 = 2*a*b2/Ea
+		A2 = (2*a*a2*b+c2+2*a*d2)/(Easq)
+		A1 = (2*b*b2+2*e2)/(Easq*Ea)
+		A0 = (a2*b*b+2*b*d2+f2)/(Easq*Easq)
+
+		A0sq = A0 * A0
+		A1sq = A1 * A1
+		A2sq = A2 * A2
+		A3sq = A3 * A3
+		A4sq = A4 * A4
+
+		B3 = 4 * A4
+		B2 = 3* A3
+		B1 = 2 * A2
+		B0 = A1
+		C2 = -(A2/2 - 3*A3sq/(16*A4))
+		C1 = -(3*A1/4. -A2*A3/(8*A4))
+		C0 = -A0 + A1*A3/(16*A4)
+		D1 = -B1 - (B3*C1*C1/C2 - B3*C0 -B2*C1)/C2
+		D0 = -B0 -B3 * C0 * C1 / (C2*C2) + B2*C0/C2
+		E0 = -C0 - C2 * D0 * D0 / (D1 * D1) + C1 * D0 / D1
+
+		t1 = A4
+		t2 = A4
+		t3 = C2
+		t4 = D1
+		t5 = E0    
+		nsol = self.signone_n(t1,t2,t3,t4,t5) - self.signone_p(t1,t2,t3,t4,t5)
+		return nsol
 
 	def nsols_massless(self,Dsq,Easq,d21,d20,e21,e20,f22,f21,f20,pax,Ea,a2,b2,c2):
 		delta = Dsq / (2*Easq)
@@ -249,6 +296,8 @@ class Mt2:
 		nsol = self.signchange_n(t1,t2,t3,t4,t5) - self.signchange_p(t1,t2,t3,t4,t5)
 		return nsol
 
+
+
 	def signchange_n(self,t1,t2,t3,t4,t5):
 		nsc = np.zeros(t1.shape)
 		for i in range(len(t1)):
@@ -276,3 +325,26 @@ class Mt2:
 				nsc[i] += 1
 		return nsc
 
+	def signone_n(self,t1,t2,t3,t4,t5):
+		nsc = 0
+		if t1 * t2 > 0:
+			nsc += 1
+		if t2 * t3 > 0:
+			nsc += 1
+		if t3 * t4 > 0:
+			nsc += 1
+		if t4 * t5 > 0:
+			nsc += 1
+		return nsc
+
+	def signone_p(self,t1,t2,t3,t4,t5):
+		nsc = 0
+		if t1 * t2 < 0:
+			nsc += 1
+		if t2 * t3 < 0:
+			nsc += 1
+		if t3 * t4 < 0:
+			nsc += 1
+		if t4 * t5 < 0:
+			nsc += 1
+		return nsc
