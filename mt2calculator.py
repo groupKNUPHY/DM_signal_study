@@ -12,7 +12,7 @@ import numba, numpy
 ############# resisov@nate.com ################
 ###############################################
 
-## This is prototype ver 1.0.2                                     ##
+## This is prototype ver 1.2.0                                     ##
 ## Array Based Calculaor for massless daughter particles!          ##
 ## Usage : import mt2calculator                                    ##
 ##         ABC = Mt2()                                             ##
@@ -45,36 +45,13 @@ class Mt2:
 		return self.massless(visAVector,visBVector,invVector)
 
 	def massless(self,visAVector,visBVector,invVector):
-		pax = visAVector[1]
-		pay = visAVector[2]
-		pbx = visBVector[1]
-		pby = visBVector[2]
-		pmissx = invVector[1]
-		pmissy = invVector[2]
+		pax = visAVector[1].flatten()
+		pay = visAVector[2].flatten()
+		pbx = visBVector[1].flatten()
+		pby = visBVector[2].flatten()
+		pmissx = invVector[1].flatten()
+		pmissy = invVector[2].flatten()
 
-		test_pax = []
-		test_pay = []
-		test_pbx = []
-		test_pby = []
-		test_pmissx = []
-		test_pmissy = []
-		for i in range(len(pax)):
-			if pax[i] == 0:
-				continue
-			else:
-				test_pax.append(pax[i])
-				test_pay.append(pay[i])
-				test_pbx.append(pax[i])
-				test_pby.append(pbx[i])
-				test_pmissx.append(pmissx[i])
-				test_pmissy.append(pmissy[i])
-
-		pax = np.array(test_pax)
-		pay = np.array(test_pay)
-		pbx = np.array(test_pbx)
-		pby = np.array(test_pby)
-		pmissx = np.array(test_pmissx).flatten()
-		pmissy = np.array(test_pmissy).flatten()
 		masq = np.zeros(pax.shape)
 		Easq = pax * pax + pay * pay
 		Ea = np.sqrt(Easq)
