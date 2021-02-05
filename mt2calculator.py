@@ -12,7 +12,7 @@ import numba, numpy
 ############# resisov@nate.com ################
 ###############################################
 
-## This is prototype ver 1.2.0                                     ##
+## This is alpha ver 1.2.0                                         ##
 ## Array Based Calculaor for massless daughter particles!          ##
 ## Usage : import mt2calculator                                    ##
 ##         ABC = Mt2()                                             ##
